@@ -31,6 +31,28 @@ if app_mode == "Crop Recommendation":
 
     model = load_model(model_path)
 
+    def soil_validation(input_df):
+        N = input_df.loc[0, 'N']
+        P = input_df.loc[0, 'P']
+        K = input_df.loc[0, 'K']
+        ph = input_df.loc[0, 'ph']
+        rainfall = input_df.loc[0, 'rainfall']
+
+        # Extreme pH
+        if ph < 4.5 or ph > 9.0:
+            return False, "❌ Extreme pH detected. Soil not suitable for cultivation."
+
+        # Very low nutrients
+        if N < 10 and P < 10 and K < 10:
+            return False, "❌ Very low soil nutrients. Soil not suitable."
+
+        # Extremely low rainfall
+        if rainfall < 20:
+            return False, "❌ Insufficient rainfall for crops."
+
+        return True, ""
+
+
     # Sidebar input
     st.sidebar.header("Input Parameters")
     def user_input_features():
@@ -52,8 +74,13 @@ if app_mode == "Crop Recommendation":
     if model:
         if st.button("Get Crop Recommendation"):
             try:
-                prediction = model.predict(input_df.values)
-                st.success(f"**Recommended crop: {prediction[0].capitalize()}**")
+                is_valid, message = soil_validation(input_df)
+
+                if not is_valid:
+                    st.error(message)
+                else:
+                    prediction = model.predict(input_df.values)
+                    st.success(f"**Recommended crop: {prediction[0].capitalize()}**")
             except Exception as e:
                 st.error(f"Prediction error: {e}")
     else:

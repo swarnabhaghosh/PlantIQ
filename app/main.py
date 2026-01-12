@@ -4,7 +4,6 @@ st.set_page_config(
     page_title="Plant IQ",
     page_icon="🌱",
     layout="wide",
-    initial_sidebar_state="collapsed"
 )
 
 import pandas as pd

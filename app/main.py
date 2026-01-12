@@ -88,7 +88,12 @@ elif app_mode == "Plant Disease Classifier":
     st.title("🪴 Plant Disease Classifier")
 
     model_path = os.path.join("models", "best_mobilenet_model.keras")
-    class_indices = json.load(open("class_indices.json"))
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    class_indices_path = os.path.join(base_dir, "class_indices.json")
+
+    with open(class_indices_path, "r") as f:
+        class_indices = json.load(f)
+
 
     model = tf.keras.models.load_model(model_path)
 
